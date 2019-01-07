@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="A3Prj:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/A3Prj_jar</output-path>
+    <root id="archive" name="A3Prj.jar">
+      <element id="module-output" name="A3Prj" />
+    </root>
+  </artifact>
+</component>
