@@ -252,20 +252,20 @@ public class Game extends Form implements Runnable {
         playKeyBindings();
 
         //------------adding buttons to container-----------//
-        leftContainer.add(addPS);
-        leftContainer.add(reload);
-        leftContainer.add(pause);
-        leftContainer.add(addNPS);
-        leftContainer.add(addSpaceStation);
-        leftContainer.add(addAsteroid);
-        leftContainer.add(accelerate);
-        leftContainer.add(decelerate);
-        leftContainer.add(turnLeft);
-        leftContainer.add(turnRight);
-        leftContainer.add(turnLauncher);
-        leftContainer.add(firePS);
-        leftContainer.add(fireNPS);
-        leftContainer.add(jumpHS);
+//        leftContainer.add(addPS);
+//        leftContainer.add(reload);
+//        leftContainer.add(pause);
+//        leftContainer.add(addNPS);
+//        leftContainer.add(addSpaceStation);
+//        leftContainer.add(addAsteroid);
+//        leftContainer.add(accelerate);
+//        leftContainer.add(decelerate);
+//        leftContainer.add(turnLeft);
+//        leftContainer.add(turnRight);
+//        leftContainer.add(turnLauncher);
+//        leftContainer.add(firePS);
+//        leftContainer.add(fireNPS);
+//        leftContainer.add(jumpHS);
 
         //---------------OverFlow Menu----------------//
         //toolbar.addCommandToOverflowMenu(myAddAsteroid);

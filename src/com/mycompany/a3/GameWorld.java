@@ -3,22 +3,23 @@ import com.codename1.charts.util.ColorUtil;
 
 import com.codename1.ui.Dialog;
 import com.codename1.ui.geom.Point2D;
+
+import java.util.NoSuchElementException;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameWorld extends Observable implements IGameWorld {
     private Random r;
     private GameCollection store;
     private GameCollection garbage;
-    //private ArrayList<GameObject> store;
     private int lives;
-    private Scanner kbd;
     private int score;
     private int gameTime;
     private boolean sound;
     private GameSound gameSound;
-    private static int ID;
+    private int gameId;
 
     //------COLORS-------//
 
@@ -33,6 +34,9 @@ public class GameWorld extends Observable implements IGameWorld {
     private double gameHeight;
     private double gameWidth;
     private boolean paused;
+    private static final Logger LOGGER = Logger.getLogger(GameWorld.class.getName());
+    private static final String NO_PS = "There is no PS!";
+    private static final String GAMEOVER = "Game Over!";
 
     public GameWorld() {
         this.init();
@@ -42,13 +46,11 @@ public class GameWorld extends Observable implements IGameWorld {
         store = new GameCollection();
         garbage = new GameCollection();
 
-        //store = new ArrayList<>();
         r = new Random();
-        kbd = new Scanner(System.in);
         lives = 3;
         score = 0;
         gameTime = 0;
-        ID = 1;
+        gameId = 1;
 
         asteroidColor = -1;
         psColor = -1;
@@ -76,7 +78,7 @@ public class GameWorld extends Observable implements IGameWorld {
     }
 
     public int getPSMissileCount() {
-        PS player = null;
+        PS player;
         try {
             for (int i = 0; i < store.getSize(); i++) {
                 if (store.getElement(i) instanceof PS) {
@@ -84,8 +86,8 @@ public class GameWorld extends Observable implements IGameWorld {
                     return player.getMissileCount();
                 }
             }
-        } catch (Exception e) {
-            System.out.println("No player ship!");
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, "No player ship!");
         }
         return 0;
     }
@@ -94,7 +96,7 @@ public class GameWorld extends Observable implements IGameWorld {
         return lives;
     }
 
-    public void setLives(int lives) {
+    private void setLives(int lives) {
         this.lives = lives;
     }
 
@@ -110,28 +112,14 @@ public class GameWorld extends Observable implements IGameWorld {
         return store;
     }
 
-    public void setPaused() {
-        if (paused) {
-            paused = false;
-        } else {
-            paused = true;
-        }
-    }
+    public void setPaused() { paused = !paused; }
 
     public boolean isPaused() {
         return paused;
     }
 
-    public void setSound() {
-        gameSound.soundToggle();
-    }
-
     public void switchSound() {
-        if (sound == true) {
-            sound = false;
-        } else {
-            sound = true;
-        }
+        sound = !sound;
         this.notifyObserver();
     }
 
@@ -146,7 +134,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 randomCoord(0.0, gameWidth), randomCoord(0.0, gameHeight)
         ), asteroidColor);
         store.add(asteroid);
-        System.out.println("A new ASTEROID has been created.");
+        LOGGER.log(Level.INFO, "A new ASTEROID has been created.");
         this.notifyObserver();
     }
 
@@ -161,7 +149,7 @@ public class GameWorld extends Observable implements IGameWorld {
             randomCoord(0.0, 1024.0), randomCoord(0.0, 768.0)
         ), r.nextInt(360), npsColor);
         store.add(nps);
-        System.out.println("A new NPS has been created.");
+        LOGGER.log(Level.INFO, "A new NPS has been created.");
         this.notifyObserver();
     }
 
@@ -175,10 +163,10 @@ public class GameWorld extends Observable implements IGameWorld {
 
         SpaceStation ss = new SpaceStation(new Point2D (
                 randomCoord(0.0, gameWidth), randomCoord(0.0, gameHeight)
-        ), spaceStationColor, ID);
-        ID++;
+        ), spaceStationColor, gameId);
+        gameId++;
         store.add(ss);
-        System.out.println("A new SPACESTATION has been created.");
+        LOGGER.log(Level.INFO, "A new SPACESTATION has been created.");
         notifyObserver();
     }
 
@@ -189,29 +177,27 @@ public class GameWorld extends Observable implements IGameWorld {
         try {
             for (int i = 0; i < store.getSize(); i++) {
                 if (store.getElement(i) instanceof PS) {
-                    throw new Exception();
+                    throw new IllegalArgumentException();
                 }
             }
-            if (psColor == -1) {
-                psColor = generateColor();
-            }
-            PS player = new PS(0, 0, psColor, new Point2D(gameWidth/2.0, gameHeight/2.0));
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING, "A player ship already exists.");
+        }
+        if (psColor == -1) {
+            psColor = generateColor();
+        } else {
+            PS player = new PS(0, 0, psColor, new Point2D(gameWidth / 2.0, gameHeight / 2.0));
             store.add(player);
-            MissileLauncher launcher = new MissileLauncher(player.getLocation(),
-                    player.getSpeed(), player.getDirection(), player.getColor());
-            System.out.println("A new PLAYERSHIP has been created.");
+            LOGGER.log(Level.INFO, "A new PLAYERSHIP has been created.");
             notifyObserver();
-        } catch (Exception e) {
-            System.out.println("A player ship already exists.");
         }
     }
 
     public void increaseSpeed() { //i
         if (this.isPaused()) {
-            return;
-        }
-        if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            if (store.getSize() == 0) {
+                LOGGER.log(Level.WARNING, NO_PS);
+            }
             return;
         }
         try {
@@ -219,20 +205,20 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     if (player.getSpeed() >= 10) {
-                        System.out.println("PS speed is max!");
-                        System.out.println("PS speed is " + player.getSpeed());
+                        LOGGER.log(Level.INFO, "PS speed is max! Max value is 10.");
                         return;
                     }
                     player.setSpeed(player.getSpeed() + 1);
-                    System.out.println("PS speed increased!");
-                    System.out.println("PS speed is now " + player.getSpeed() + "!");
+                    LOGGER.log(Level.INFO, "PS speed increased!");
                     this.notifyObserver();
                     return;
                 }
             }
-            throw new Exception();
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, NO_PS);
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.SEVERE, "Another error has occurred.");
         }
     }
 
@@ -241,7 +227,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -249,20 +235,18 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     if (player.getSpeed() <= 0) {
-                        System.out.println("PS can't go any slower!");
-                        System.out.println("PS speed is " + player.getSpeed() + "!");
+                        LOGGER.log(Level.INFO, "PS cannot go any slower!");
                         return;
                     }
                     player.setSpeed(player.getSpeed() - 1);
-                    System.out.println("PS speed decreased!");
-                    System.out.println("PS speed is now " + player.getSpeed() + "!");
+                    LOGGER.log(Level.INFO, "PS speed decreased!");
                     notifyObserver();
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
-            System.out.println("There is no PS!");
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -271,7 +255,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -286,7 +270,7 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             throw new Exception();
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -295,7 +279,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -310,7 +294,7 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             throw new Exception();
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -319,7 +303,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -334,7 +318,7 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             throw new Exception();
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -361,7 +345,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -388,9 +372,11 @@ public class GameWorld extends Observable implements IGameWorld {
                     }
                 }
             }
-            throw new Exception();
+            throw new NullPointerException();
+        } catch (NullPointerException e) {
+            LOGGER.log(Level.WARNING, NO_PS);
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            System.out.println("A different error has occcured.");
         }
     }
 
@@ -435,7 +421,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -449,7 +435,7 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             throw new Exception();
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -458,7 +444,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
             return;
         }
         try {
@@ -472,7 +458,7 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             throw new Exception();
         } catch (Exception e) {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
     }
 
@@ -569,7 +555,7 @@ public class GameWorld extends Observable implements IGameWorld {
                     lives--;
                 } else {
                     removePS();
-                    System.out.println("Game Over!");
+                    LOGGER.log(Level.INFO, GAMEOVER);
                     return;
                 }
             } else {
@@ -609,7 +595,7 @@ public class GameWorld extends Observable implements IGameWorld {
                     lives--;
                 } else {
                     removePS();
-                    System.out.println("Game Over!");
+                    LOGGER.log(Level.INFO, GAMEOVER);
                     return;
                 }
             } else {
@@ -650,7 +636,7 @@ public class GameWorld extends Observable implements IGameWorld {
                     lives--;
                 } else {
                     removePS();
-                    System.out.println("Game Over!");
+                    LOGGER.log(Level.INFO, GAMEOVER);
                     return;
                 }
             } else {
@@ -781,7 +767,7 @@ public class GameWorld extends Observable implements IGameWorld {
         if (player != null) {
             System.out.println("PS missiles remaining: " + player.getMissileCount());
         } else {
-            System.out.println("There is no PS!");
+            LOGGER.log(Level.WARNING, NO_PS);
         }
         System.out.println("Current game time: " + gameTime);
     }
