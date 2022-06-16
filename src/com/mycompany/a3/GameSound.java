@@ -2,9 +2,13 @@ package com.mycompany.a3;
 
 public class GameSound {
 
-    private Sound missileLaunch, collision, gameOver, missileHit;
-    private BackgroundSound backgroundSound;
-    private int bgVol, gameVol;
+    private final Sound missileLaunch;
+    private final Sound collision;
+    private final Sound gameOver;
+    private final Sound missileHit;
+    private final BackgroundSound backgroundSound;
+    private int bgVol;
+    private int gameVol;
     private boolean enable;
 
     public GameSound() {
@@ -28,14 +32,6 @@ public class GameSound {
             collision.play(getVol());
         }
     }
-
-    /*
-    public void shipCrashSound() {
-        if (enable) {
-            shipCrash.play(getVol());
-        }
-    }
-    */
 
     public void missileHitSound() {
         if (enable) {
@@ -67,7 +63,7 @@ public class GameSound {
 
     public void soundToggle() {
         enable = !enable;
-        if (enable == false){
+        if (!enable){
             pauseMusic();
         } else {
             playMusic();
@@ -76,7 +72,7 @@ public class GameSound {
 
     public void soundToggle(boolean e) {
         enable = !e;
-        if (enable == false) {
+        if (!enable) {
             pauseMusic();
         } else {
             playMusic();

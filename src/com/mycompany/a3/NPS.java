@@ -1,5 +1,4 @@
 package com.mycompany.a3;
-import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Point2D;
 
@@ -21,7 +20,7 @@ public class NPS extends Ship implements IDrawable, ICollider {
         setColor(color);
     }
 
-    public void fire(MissileNPS missile) {
+    public void fire(Missile missile) {
         if (getMissileCount() == 0) {
             return;
         } else {

@@ -12,7 +12,7 @@ public class MissileLauncherNPS extends MoveableObject implements IDrawable{
         setColor(color);
     }
 
-    public void fire(MissileNPS missile) {
+    public void fire(Missile missile) {
         //missile is fired!
     }
 

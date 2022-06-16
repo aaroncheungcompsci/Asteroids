@@ -1,9 +1,11 @@
-package com.mycompany.a3;
+package com.mycompany.a3.oldcommands;
 
 import com.codename1.ui.Command;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.util.UITimer;
+import com.mycompany.a3.Game;
+import com.mycompany.a3.GameWorld;
 
 public class PauseCommand extends Command {
 

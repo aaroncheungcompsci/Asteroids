@@ -15,9 +15,9 @@ public class Asteroid extends MoveableObject implements IDrawable, ICollider {
         setDirection();
         setLocation(location);
         setColor(color);
-        //this.size = size;
     }
 
+    @Override
     public int getSize() {
         return size;
     }
@@ -40,17 +40,14 @@ public class Asteroid extends MoveableObject implements IDrawable, ICollider {
         double pY = ptr.getY();
         double xLoc = component.getX() + this.getLocation().getX();
         double yLoc = component.getY() + this.getLocation().getY();
-        if (pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize();
     }
 
     public boolean collidesWith (ICollider object) {
         GameObject gObject = (GameObject) object;
-        int centerX = (int) (this.getLocation().getX() + (this.getSize()/2));
-        int centerY = (int) (this.getLocation().getY() + (this.getSize()/2));
+        int centerX = (int) (this.getLocation().getX() + (this.getSize()/2.0));
+        int centerY = (int) (this.getLocation().getY() + (this.getSize()/2.0));
         int otherCenterX = (int) gObject.getLocation().getX() + gObject.getSize()/2;
         int otherCenterY = (int) gObject.getLocation().getY() + gObject.getSize()/2;
         int dx = centerX - otherCenterX;
@@ -60,11 +57,7 @@ public class Asteroid extends MoveableObject implements IDrawable, ICollider {
         int otherRadius = gObject.getSize()/2;
         int radiiSquare = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
 
-        if (distBetweenCenters <= radiiSquare) {
-            return true;
-        } else {
-            return false;
-        }
+        return distBetweenCenters <= radiiSquare;
     }
 
     public void handleCollision (ICollider object) {
@@ -89,6 +82,7 @@ public class Asteroid extends MoveableObject implements IDrawable, ICollider {
         }
     }
 
+    @Override
     public String toString() {
         String parentDesc = super.toString();
         String myDesc = " size:" + getSize();

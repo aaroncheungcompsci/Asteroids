@@ -1,17 +1,17 @@
 package com.mycompany.a3;
-import java.util.Random;
 
 public abstract class FixedObject extends GameObject {
 
     private int ID;
 
-    public FixedObject(int ID) {
+    protected FixedObject(int ID) {
         this.ID = ID;
     }
 
+    @Override
     public String toString() {
         String parentDesc = super.toString();
-        String myDesc = ""; //ID number
+        String myDesc = Integer.toString(ID); //ID number
         return parentDesc + myDesc;
     }
 

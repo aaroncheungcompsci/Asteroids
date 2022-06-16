@@ -4,7 +4,7 @@ import java.util.Observable;
 
 public class GameWorldProxy extends Observable implements IGameWorld {
 
-    private GameWorld gw;
+    private final GameWorld gw;
 
     public GameWorldProxy (GameWorld gw) {
         this.gw = gw;

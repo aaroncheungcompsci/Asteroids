@@ -41,7 +41,7 @@ public class GameCollection implements ICollection {
         }
 
         public boolean hasNext() {
-            if (collection.size() <= 0) {
+            if (collection.isEmpty()) {
                 return false;
             } else if (currIndex == collection.size() - 1) {
                 return false;

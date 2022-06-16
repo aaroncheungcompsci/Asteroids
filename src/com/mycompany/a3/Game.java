@@ -1,25 +1,17 @@
 package com.mycompany.a3;
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.*;
-import com.codename1.ui.events.ActionEvent;
-import com.codename1.ui.events.ActionListener;
-import com.codename1.ui.geom.Dimension;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
-import com.codename1.ui.plaf.Border;
 import com.codename1.ui.util.UITimer;
-
-import java.util.Random;
+import com.mycompany.a3.oldcommands.*;
 
 
 public class Game extends Form implements Runnable {
-    private GameWorld gw;
-    private MapView mv;
-    private PointsView pv;
-    private BackgroundSound bgSound;
-
-    private boolean paused;
-    private UITimer timer;
+    private final GameWorld gw;
+    private final MapView mv;
+    private final PointsView pv;
+    private final UITimer timer;
 
     public Game() {
         this.setLayout(new BorderLayout());
@@ -29,9 +21,7 @@ public class Game extends Form implements Runnable {
         pv = new PointsView(gw);
         gw.addObserver(mv);
         gw.addObserver(pv);
-        bgSound = new BackgroundSound("audio.wav");
 
-        //play();
         startTimer(timer);
 
         Container leftContainer = new Container();
@@ -342,102 +332,6 @@ public class Game extends Form implements Runnable {
     @Override
     public void run() {
         mv.repaint();
-        //mv.setHandlesInput(true);
         gw.advanceGameTime();
     }
-
-    /*
-    private void play() {
-        Label myLabel = new Label("Enter a command:");
-        this.addComponent(myLabel);
-        final TextField myTextField = new TextField();
-        this.addComponent(myTextField);
-        this.show();
-        myTextField.addActionListener(new ActionListener() {
-           public void actionPerformed(ActionEvent evt) {
-               String aCommand = myTextField.getText();
-               myTextField.clear();
-
-               switch (aCommand.charAt(0)) {
-                   case 'a':
-                       gw.addNewAsteroid();
-                       break;
-                   case 'y':
-                       gw.addNewNPS();
-                       break;
-                   case 'b':
-                       gw.addNewSpaceStation();
-                       break;
-                   case 's':
-                       gw.addNewPS();
-                       break;
-                   case 'i':
-                       gw.increaseSpeed();
-                       break;
-                   case 'd':
-                       gw.decreaseSpeed();
-                       break;
-                   case 'l':
-                       gw.turnLeft();
-                       break;
-                   case 'r':
-                       gw.turnRight();
-                       break;
-                   case '<':
-                       gw.turnMissileLauncher();
-                       break;
-                   case 'f':
-                       gw.fire();
-                       break;
-                   case 'L':
-                       gw.launch();
-                       break;
-                   case 'j':
-                       gw.jumpHyperspace();
-                       break;
-                   case 'n':
-                       gw.reload();
-                       break;
-                   case 'k':
-                       gw.killAsteroid();
-                       break;
-                   case 'e':
-                       gw.killNPS();
-                       break;
-                   case 'E':
-                       gw.killPS();
-                       break;
-                   case 'c':
-                       gw.crash();
-                       break;
-                   case 'h':
-                       gw.hit();
-                       break;
-                   case 'x':
-                       gw.collide();
-                       break;
-                   case 'I':
-                       gw.impact();
-                       break;
-                   case 't':
-                       gw.tick();
-                       break;
-                   case 'p':
-                       gw.print();
-                       break;
-                   case 'm':
-                       gw.map();
-                       break;
-                   case 'q':
-                       gw.quit();
-                       break;
-                   default:
-                       System.out.println("Invalid command.");
-                       break;
-               }
-           }
-        });
-
-    }
-    */
 }

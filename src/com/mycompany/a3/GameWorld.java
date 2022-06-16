@@ -37,6 +37,7 @@ public class GameWorld extends Observable implements IGameWorld {
     private static final Logger LOGGER = Logger.getLogger(GameWorld.class.getName());
     private static final String NO_PS = "There is no PS!";
     private static final String GAMEOVER = "Game Over!";
+    private static final String DIFFERROR = "Another error has occurred.";
 
     public GameWorld() {
         this.init();
@@ -131,7 +132,7 @@ public class GameWorld extends Observable implements IGameWorld {
             asteroidColor = ColorUtil.BLUE;
         }
         Asteroid asteroid = new Asteroid(new Point2D(
-                randomCoord(0.0, gameWidth), randomCoord(0.0, gameHeight)
+                randomCoord(gameWidth), randomCoord(gameHeight)
         ), asteroidColor);
         store.add(asteroid);
         LOGGER.log(Level.INFO, "A new ASTEROID has been created.");
@@ -146,7 +147,7 @@ public class GameWorld extends Observable implements IGameWorld {
             npsColor = generateColor();
         }
         NPS nps = new NPS(new Point2D(
-            randomCoord(0.0, 1024.0), randomCoord(0.0, 768.0)
+            randomCoord(1024.0), randomCoord(768.0)
         ), r.nextInt(360), npsColor);
         store.add(nps);
         LOGGER.log(Level.INFO, "A new NPS has been created.");
@@ -162,7 +163,7 @@ public class GameWorld extends Observable implements IGameWorld {
         }
 
         SpaceStation ss = new SpaceStation(new Point2D (
-                randomCoord(0.0, gameWidth), randomCoord(0.0, gameHeight)
+                randomCoord(gameWidth), randomCoord(gameHeight)
         ), spaceStationColor, gameId);
         gameId++;
         store.add(ss);
@@ -218,7 +219,7 @@ public class GameWorld extends Observable implements IGameWorld {
         } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Another error has occurred.");
+                LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -263,14 +264,16 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     player.steerLeft();
-                    System.out.println("Ship turned left slightly!");
-                    this.notifyObserver();
+                    LOGGER.log(Level.INFO, "Ship turned left slightly!");
+                    notifyObserver();
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -287,14 +290,16 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     player.steerRight();
-                    System.out.println("Ship turned right slightly!");
+                    LOGGER.log(Level.INFO, "Ship turned right slightly!");
                     this.notifyObserver();
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -311,14 +316,16 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     player.steerLauncher();
-                    System.out.println("Launcher turned counter-clockwise slightly!");
+                    LOGGER.log(Level.INFO, "Launcher turned counter-clockwise slightly!");
                     this.notifyObserver();
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -400,7 +407,7 @@ public class GameWorld extends Observable implements IGameWorld {
                         }
                         Point2D point = new Point2D(((NPS) store.getElement(i)).getLocation().getX(),
                                 ((NPS) store.getElement(i)).getLocation().getY());
-                        MissileNPS missile = new MissileNPS(point, npc.getSpeed(), npc.getDirection(), missileColor, 5);
+                        Missile missile = new Missile(npc.getDirection(), npc.getSpeed(), point, missileColor, 5);
                         npc.fire(missile);
                         gameSound.missileLaunchSound();
                         System.out.println("NPS has fired a missile!");
@@ -483,7 +490,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (missile == true && aster == true) {
+            if (missile && aster) {
                 removeMissile();
                 removeAsteroid();
             } else {
@@ -515,7 +522,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (missile == true && NPS == true) {
+            if (missile && NPS) {
                 removeMissile();
                 removeNPS();
             } else {
@@ -548,7 +555,7 @@ public class GameWorld extends Observable implements IGameWorld {
                     player = (PS) store.getElement(i);
                 }
             }
-            if (missile == true && PS == true) {
+            if (missile && PS) {
                 removeMissileNPS();
                 if (lives > 0) {
                     player.setLocation(new Point2D(gameWidth/2.0, gameHeight/2.0));
@@ -561,16 +568,16 @@ public class GameWorld extends Observable implements IGameWorld {
             } else {
                 throw new Exception();
             }
-            System.out.println("A NPS missile has hit you! " + lives + " lives left!");
+            System.out.println("A missile has hit you!");
             notifyObserver();
         } catch (Exception e) {
-            System.out.println("No missileNPS or PS in game");
+            System.out.println("No missile or PS in game");
         }
     }
 
     public void crash() { //c PS crash into asteroid
         boolean aster = false;
-        boolean PS = false;
+        boolean ps = false;
         PS player = null;
         if (store.getSize() == 0) {
             System.out.println("No asteroid or PS in game");
@@ -583,12 +590,12 @@ public class GameWorld extends Observable implements IGameWorld {
             }
             for (int i = 0; i < store.getSize(); i++) {
                 if (store.getElement(i) instanceof PS) { //look for PS
-                    PS = true;
+                    ps = true;
                     player = (PS) store.getElement(i);
                 }
             }
 
-            if (aster == true && PS == true) {
+            if (aster && ps) {
                 removeAsteroid();
                 if (lives > 0) {
                     player.setLocation(new Point2D(gameWidth/2.0, gameHeight/2.0));
@@ -629,7 +636,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (NPS == true && PS == true) {
+            if (NPS && PS) {
                 removeNPS();
                 if (lives > 0) {
                     player.setLocation(new Point2D(gameWidth/2.0, gameHeight/2.0));
@@ -670,7 +677,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (aster1 == true && aster2 == true) {
+            if (aster1 && aster2) {
                 removeAsteroid();
                 removeAsteroid();
             } else {
@@ -702,7 +709,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (aster == true && NPS == true) {
+            if (aster && NPS) {
                 removeAsteroid();
                 removeNPS();
             } else {
@@ -751,61 +758,6 @@ public class GameWorld extends Observable implements IGameWorld {
         this.notifyObserver();
     }
 
-    public void print() { //p
-        PS player = null;
-        if (store.getSize() == 0) {
-            //do nothing?
-        } else {
-            for (int i = 0; i < store.getSize(); i++) {
-                if (store.getElement(i) instanceof PS) {
-                    player = (PS) store.getElement(i);
-                }
-            }
-        }
-
-        System.out.println("Current Score: " + score);
-        if (player != null) {
-            System.out.println("PS missiles remaining: " + player.getMissileCount());
-        } else {
-            LOGGER.log(Level.WARNING, NO_PS);
-        }
-        System.out.println("Current game time: " + gameTime);
-    }
-
-    public void map() { //m
-        if (store.getSize() == 0) {
-            System.out.println("No objects in game!");
-            return;
-        }
-        for (int i = 0; i < store.getSize(); i++) {
-            if (store.getElement(i) instanceof PS) {
-                PS player = (PS) store.getElement(i);
-                System.out.print("PS: ");
-                System.out.println(player.toString());
-            } else if (store.getElement(i) instanceof NPS) {
-                NPS npc = (NPS) store.getElement(i);
-                System.out.print("NPS: ");
-                System.out.println(npc.toString());
-            } else if (store.getElement(i) instanceof Asteroid) {
-                Asteroid asteroid = (Asteroid) store.getElement(i);
-                System.out.print("Asteroid: ");
-                System.out.println(asteroid.toString());
-            } else if (store.getElement(i) instanceof SpaceStation) {
-                SpaceStation ss = (SpaceStation) store.getElement(i);
-                System.out.print("Station: ");
-                System.out.println(ss.toString());
-            } else if (store.getElement(i) instanceof Missile) {
-                Missile missile = (Missile) store.getElement(i);
-                System.out.print("PS Missile: ");
-                System.out.println(missile.toString());
-            } else if (store.getElement(i) instanceof MissileNPS) {
-                MissileNPS missile = (MissileNPS) store.getElement(i);
-                System.out.print("NPS Missile: ");
-                System.out.println(missile.toString());
-            }
-        }
-    }
-
     public void quit() { //q
         System.exit(0);
     }
@@ -814,7 +766,7 @@ public class GameWorld extends Observable implements IGameWorld {
         gameTime++;
         tick();
         if (gameTime % 500 == 0) {
-            int roll = randomVal(1, 10);
+            int roll = randomVal();
             if (roll >= 5) {
                 addNewNPS();
                 for (int i = 0; i < 4; i++) {
@@ -852,12 +804,11 @@ public class GameWorld extends Observable implements IGameWorld {
     }
 
     public void removeCollided() {
-        //GameCollection garbage = new GameCollection();
         IIterator remIterator = store.getIterator();
         Object object;
         while(remIterator.hasNext()) {
             object = remIterator.getNext();
-            if(((GameObject)object).getFlag() == true) {
+            if(((GameObject) object).getFlag()) {
                 garbage.add((GameObject) object);
                 remIterator.removeObject(object);
             }
@@ -896,7 +847,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 gameSound.genericSound();
                 iterator.removeObject(target);
             }
-            if (target instanceof Asteroid && ((Asteroid) target).getMissileFlag() == true) {
+            if (target instanceof Asteroid && ((Asteroid) target).getMissileFlag()) {
                 Asteroid aster = (Asteroid) target;
                 if (aster.getSize() >= 20) {
                     setPlayerScore(getPlayerScore() + 200);
@@ -907,11 +858,11 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
 
-            if (target instanceof NPS && ((NPS) target).getMissileFlag() == true) {
+            if (target instanceof NPS && ((NPS) target).getMissileFlag()) {
                 setPlayerScore(getPlayerScore() + 300);
             }
 
-            if (target instanceof SpaceStation && ((SpaceStation) target).getSpaceStationFlag() == true) {
+            if (target instanceof SpaceStation && ((SpaceStation) target).getSpaceStationFlag()) {
                 reload();
             }
         }
@@ -923,14 +874,14 @@ public class GameWorld extends Observable implements IGameWorld {
         this.notifyObservers(new GameWorldProxy(this));
     }
 
-    private double randomCoord(double min, double max) {
-        Random r = new Random();
-        return min + (max - min) * r.nextDouble();
+    private double randomCoord(double max) {
+        r = new Random();
+        return 0.0 + (max - 0.0) * r.nextDouble();
     }
 
-    private int randomVal(int min, int max) {
+    private int randomVal() {
         r = new Random();
-        return min + (max - min) * r.nextInt();
+        return 1 + (10 - 1) * r.nextInt();
     }
 
     private int generateColor() {

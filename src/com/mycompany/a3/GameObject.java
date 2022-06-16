@@ -11,7 +11,7 @@ public abstract class GameObject implements ISelectable {
     private int color;
 
     private boolean isSelected;
-    private GameCollection collection;
+    //private GameCollection collection;
 
     //flags for collisions
     private boolean flag;
@@ -21,13 +21,13 @@ public abstract class GameObject implements ISelectable {
     private boolean MissileFlag;
     private boolean NPSMissileFlag;
     private boolean SSFlag;
-
     private int size;
+    private Random r;
 
-    public GameObject() {
+    protected GameObject() {
         location = new Point2D(randomCoord(0.0, 1024.0), randomCoord(0.0, 768.0));
         isSelected = false;
-
+        r = new Random();
         flag = false;
     }
 
@@ -100,13 +100,8 @@ public abstract class GameObject implements ISelectable {
     }
 
     public double randomCoord(double min, double max) {
-        Random r = new Random();
         return min + (max - min) * r.nextDouble();
     }
-
-    public abstract void draw(Graphics g, Point2D component);
-
-    public abstract boolean contains(Point2D ptr, Point2D component);
 
     public String toString() {
         double x = Math.round(getLocation().getX());

@@ -21,11 +21,13 @@ public class PS extends Ship implements ISteerable, IDrawable, ICollider {
     }
 
     public void fire(Missile missile) {
-        if (getMissileCount() == 0) {
-            return;
-        } else {
-            setMissileCount(getMissileCount() - 1);
-            launcher.fire(missile);
+        switch (getMissileCount()) {
+            case 0:
+                break;
+            default:
+                setMissileCount(getMissileCount() - 1);
+                launcher.fire(missile);
+                break;
         }
     }
 
