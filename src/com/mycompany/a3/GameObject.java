@@ -22,12 +22,11 @@ public abstract class GameObject implements ISelectable {
     private boolean NPSMissileFlag;
     private boolean SSFlag;
     private int size;
-    private Random r;
+    private final Random r = new Random();
 
     protected GameObject() {
         location = new Point2D(randomCoord(0.0, 1024.0), randomCoord(0.0, 768.0));
         isSelected = false;
-        r = new Random();
         flag = false;
     }
 

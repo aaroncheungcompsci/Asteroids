@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Asteroid extends MoveableObject implements IDrawable, ICollider {
 
-    private int size;
+    private final int size;
 
     public Asteroid(Point2D location, int color) {
         Random r = new Random();
