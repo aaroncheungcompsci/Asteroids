@@ -186,12 +186,12 @@ public class GameWorld extends Observable implements IGameWorld {
         }
         if (psColor == -1) {
             psColor = generateColor();
-        } else {
-            PS player = new PS(0, 0, psColor, new Point2D(gameWidth / 2.0, gameHeight / 2.0));
-            store.add(player);
-            LOGGER.log(Level.INFO, "A new PLAYERSHIP has been created.");
-            notifyObserver();
         }
+        PS player = new PS(0, 0, psColor, new Point2D(gameWidth / 2.0, gameHeight / 2.0));
+        store.add(player);
+        LOGGER.log(Level.INFO, "A new PLAYERSHIP has been created.");
+        notifyObserver();
+
     }
 
     public void increaseSpeed() { //i
@@ -341,9 +341,9 @@ public class GameWorld extends Observable implements IGameWorld {
                     missile.refillFuel();
                 }
             }
-            System.out.println("Missiles refueled!");
+            LOGGER.log(Level.INFO, "Missiles refueled!");
         } catch (Exception e) {
-            System.out.println("No player missiles to refuel!");
+            LOGGER.log(Level.INFO, "No player missiles to refuel!");
         }
     }
 
@@ -360,7 +360,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof PS) {
                     PS player = (PS) store.getElement(i);
                     if (player.getMissileCount() == 0) {
-                        System.out.println("PS has no more missiles!");
+                        LOGGER.log(Level.INFO, "PS has no more missiles!");
                         return;
                     } else {
                         if (missileColor == -1) {
@@ -373,7 +373,7 @@ public class GameWorld extends Observable implements IGameWorld {
                         player.fire(missile);
                         gameSound.missileLaunchSound();
                         store.add(missile);
-                        System.out.println("PS missile fired!");
+                        LOGGER.log(Level.INFO, "PS missile fired!");
                         this.notifyObserver();
                         return;
                     }
@@ -383,7 +383,7 @@ public class GameWorld extends Observable implements IGameWorld {
         } catch (NullPointerException e) {
             LOGGER.log(Level.WARNING, NO_PS);
         } catch (Exception e) {
-            System.out.println("A different error has occcured.");
+            LOGGER.log(Level.INFO, "A different error has occcured.");
         }
     }
 
@@ -392,7 +392,7 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         if (store.getSize() == 0) {
-            System.out.println("There is no NPS!");
+            LOGGER.log(Level.INFO, "There is no NPS!");
             return;
         }
         try {
@@ -400,7 +400,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 if (store.getElement(i) instanceof NPS) {
                     NPS npc = (NPS) store.getElement(i);
                     if (npc.getMissileCount() == 0) {
-                        System.out.println("NPS has no more missiles!");
+                        LOGGER.log(Level.INFO, "NPS has no more missiles!");
                     } else {
                         if (missileColor == -1) {
                             missileColor = generateColor();
@@ -410,16 +410,18 @@ public class GameWorld extends Observable implements IGameWorld {
                         Missile missile = new Missile(npc.getDirection(), npc.getSpeed(), point, missileColor, 5);
                         npc.fire(missile);
                         gameSound.missileLaunchSound();
-                        System.out.println("NPS has fired a missile!");
+                        LOGGER.log(Level.INFO, "NPS has fired a missile!");
                         store.add(missile);
                         this.notifyObserver();
                         return;
                     }
                 }
             }
-            throw new Exception();
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "There is no NPS!");
         } catch (Exception e) {
-            System.out.println("There is no NPS!");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -440,9 +442,11 @@ public class GameWorld extends Observable implements IGameWorld {
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -463,9 +467,11 @@ public class GameWorld extends Observable implements IGameWorld {
                     return;
                 }
             }
-            throw new Exception();
-        } catch (Exception e) {
+            throw new NoSuchElementException();
+        } catch (NoSuchElementException e) {
             LOGGER.log(Level.WARNING, NO_PS);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -476,7 +482,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean missile = false;
         boolean aster = false;
         if (store.getSize() == 0) {
-            System.out.println("No asteroid or missile in game");
+            LOGGER.log(Level.INFO, "No asteroid or missile in game");
         }
         try {
             for (int i = 0; i < store.getSize(); i++) {
@@ -494,13 +500,15 @@ public class GameWorld extends Observable implements IGameWorld {
                 removeMissile();
                 removeAsteroid();
             } else {
-                throw new Exception();
+                throw new NoSuchElementException();
             }
             score += 30;
-            System.out.println("A PS missile has hit an asteroid!");
+            LOGGER.log(Level.INFO, "A PS missile has hit an asteroid!");
             notifyObserver();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "No missile or asteroid in game");
         } catch (Exception e) {
-            System.out.println("No missile or asteroid in game");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -508,7 +516,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean missile = false;
         boolean NPS = false;
         if (store.getSize() == 0) {
-            System.out.println("No missile or NPS in game");
+            LOGGER.log(Level.INFO, "No missile or NPS in game");
         }
         try {
             for (int i = 0; i < store.getSize(); i++) {
@@ -526,13 +534,15 @@ public class GameWorld extends Observable implements IGameWorld {
                 removeMissile();
                 removeNPS();
             } else {
-                throw new Exception();
+                throw new NoSuchElementException();
             }
-            System.out.println("A PS missile has hit an NPS!");
+            LOGGER.log(Level.INFO, "A PS missile has hit an NPS!");
             score += 30;
             notifyObserver();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "No missile or NPS in game");
         } catch (Exception e) {
-            System.out.println("No missile or NPS in game");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -541,7 +551,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean PS = false;
         PS player = null;
         if (store.getSize() == 0) {
-            System.out.println("No missileNPS or PS in game");
+            LOGGER.log(Level.INFO, "No missileNPS or PS in game");
         }
         try {
             for (int i = 0; i < store.getSize(); i++) {
@@ -566,12 +576,14 @@ public class GameWorld extends Observable implements IGameWorld {
                     return;
                 }
             } else {
-                throw new Exception();
+                throw new NoSuchElementException();
             }
-            System.out.println("A missile has hit you!");
+            LOGGER.log(Level.INFO, "A missile has hit you!");
             notifyObserver();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "No missile or PS in game");
         } catch (Exception e) {
-            System.out.println("No missile or PS in game");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -580,7 +592,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean ps = false;
         PS player = null;
         if (store.getSize() == 0) {
-            System.out.println("No asteroid or PS in game");
+            LOGGER.log(Level.INFO, "No asteroid or PS in game");
         }
         try {
             for (int i = 0; i < store.getSize(); i++) {
@@ -606,12 +618,14 @@ public class GameWorld extends Observable implements IGameWorld {
                     return;
                 }
             } else {
-                throw new Exception();
+                throw new NoSuchElementException();
             }
-            System.out.println("An asteroid has hit you! " + lives + " lives left!");
+            LOGGER.log(Level.INFO, "An asteroid has hit you!");
             notifyObserver();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "No asteroid or PS in game");
         } catch (Exception e) {
-            System.out.println("No asteroid or PS in game");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -620,7 +634,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean PS = false;
         PS player = null;
         if (store.getSize() == 0) {
-            System.out.println("No NPS or PS in game");
+            LOGGER.log(Level.INFO, "No NPS or PS in game");
             return;
         }
         try {
@@ -647,12 +661,14 @@ public class GameWorld extends Observable implements IGameWorld {
                     return;
                 }
             } else {
-                throw new Exception();
+                throw new NoSuchElementException();
             }
-            System.out.println("You crashed into an NPS! " + lives + " lives left!");
+            LOGGER.log(Level.INFO, "You crashed into an NPS! " + lives + " lives left!");
             notifyObserver();
+        } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, "No NPS or PS in game");
         } catch (Exception e) {
-            System.out.println("No NPS or PS in game");
+            LOGGER.log(Level.SEVERE, DIFFERROR);
         }
     }
 
@@ -661,7 +677,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean aster2 = false;
         int hold = 0;
         if (store.getSize() == 0) {
-            System.out.println("There are no asteroids at all.");
+            LOGGER.log(Level.INFO, "There are no asteroids at all.");
             return;
         }
         try {
@@ -683,10 +699,10 @@ public class GameWorld extends Observable implements IGameWorld {
             } else {
                 throw new Exception();
             }
-            System.out.println("Two asteroids have hit each other!");
+            LOGGER.log(Level.INFO, "Two asteroids have hit each other!");
             notifyObserver();
         } catch (Exception e) {
-            System.out.println("There are no asteroids at all, or there is only one.");
+            LOGGER.log(Level.INFO, "There are no asteroids at all, or there is only one.");
         }
     }
 
@@ -694,7 +710,7 @@ public class GameWorld extends Observable implements IGameWorld {
         boolean NPS = false;
         boolean aster = false;
         if (store.getSize() == 0) {
-            System.out.println("There is no NPS or Asteroid");
+            LOGGER.log(Level.INFO, "There is no NPS or Asteroid");
             return;
         }
         try {
@@ -715,10 +731,10 @@ public class GameWorld extends Observable implements IGameWorld {
             } else {
                 throw new Exception();
             }
-            System.out.println("NPS and an asteroid have hit each other!");
+            LOGGER.log(Level.INFO, "NPS and an asteroid have hit each other!");
             notifyObserver();
         } catch (Exception e) {
-            System.out.println("There is no NPS or Asteroid");
+            LOGGER.log(Level.INFO, "There is no NPS or Asteroid");
         }
     }
 
@@ -792,11 +808,8 @@ public class GameWorld extends Observable implements IGameWorld {
                 ICollider otherObj = (ICollider)iter2.getNext();
                 // get a collidable object
                 // check for collision
-                if(otherObj!=curObj) {
-                    // make sure it's not the SAME object
-                    if(curObj.collidesWith(otherObj)) {
-                        curObj.handleCollision(otherObj);
-                    }
+                if(otherObj!=curObj && curObj.collidesWith(otherObj)) {
+                    curObj.handleCollision(otherObj);
                 }
             }
         }
@@ -830,7 +843,7 @@ public class GameWorld extends Observable implements IGameWorld {
                 iterator.removeObject(target);
                 setLives(getLives() - 1);
                 if (getLives() > 0) {
-                    System.out.println("player has lives: " + getLives());
+                    LOGGER.log(Level.INFO, "player has lives: " + getLives());
                     addNewPS();
                     jumpHyperspace();
                 } else {

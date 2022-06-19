@@ -70,7 +70,7 @@ public class Game extends Form implements Runnable {
         Button firePS = new Button("Fire PS");
         Button fireNPS = new Button("Fire NPS");
         Button jumpHS = new Button("Jump HyperSpace");
-        Button reload = new Button("Reload"); //n
+        Button reload = new Button("Reload");
         /*
         Button killAsteroid = new Button("Kill Asteroid"); //k
         Button killNPS = new Button("Kill NPS");

@@ -36,6 +36,7 @@ public class SpaceStation extends FixedObject implements IDrawable, ICollider {
         return visible;
     }
 
+    @Override
     public String toString() {
         String parentDesc = super.toString();
         String myDesc = " rate:" + getBlinkRate();
