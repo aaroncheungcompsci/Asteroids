@@ -8,9 +8,9 @@ public class NPS extends Ship implements IDrawable, ICollider {
 
     private MissileLauncherNPS launcher;
     private int size;
+    private Random r = new Random();
 
     public NPS(Point2D location, int direction, int color) {
-        Random r = new Random();
         setMissileCount(2);
         setSpeed();
         launcher = new MissileLauncherNPS(location, this.getSpeed(), direction, color);
@@ -58,11 +58,8 @@ public class NPS extends Ship implements IDrawable, ICollider {
         double pY = ptr.getY();
         double xLoc = component.getX() + this.getLocation().getX();
         double yLoc = component.getY() + this.getLocation().getY();
-        if (pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize();
     }
 
     public boolean collidesWith (ICollider object) {
@@ -95,8 +92,6 @@ public class NPS extends Ship implements IDrawable, ICollider {
         } else if (object instanceof Missile) {
             this.setMissileFlag(true);
             this.setFlag(true);
-        } else if (object instanceof SpaceStation) {
-            //do nothing!
         } else if (object instanceof NPS) { //becareful with this one
             this.setNPSFlag(true);
             this.setFlag(true);
@@ -113,7 +108,6 @@ public class NPS extends Ship implements IDrawable, ICollider {
     }
 
     private int randomVal(int min, int max) {
-        Random r = new Random();
         return min + (max - min);
     }
 }

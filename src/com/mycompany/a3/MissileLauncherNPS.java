@@ -25,10 +25,7 @@ public class MissileLauncherNPS extends MoveableObject implements IDrawable{
         double pY = ptr.getY();
         double xLoc = component.getX() + this.getLocation().getX();
         double yLoc = component.getY() + this.getLocation().getY();
-        if (pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize();
     }
 }

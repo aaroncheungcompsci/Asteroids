@@ -27,13 +27,13 @@ public class PauseCommand extends Command {
             if (gw.isPaused()) {
                 game.startTimer(timer);
                 gw.setPaused();
-                game.playKeyBindings();
+                //game.playKeyBindings();
                 Dialog.show("Paused", "The game is now unpaused.",
                         "OK", null);
             } else {
                 game.stopTimer(timer);
                 gw.setPaused();
-                game.pauseKeyBindings();
+                //game.pauseKeyBindings();
                 Dialog.show("Paused", "The game is now paused.",
                         "OK", null);
             }

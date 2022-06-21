@@ -14,7 +14,7 @@ public class FireNPSCommand extends Command {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getKeyEvent() != -1)
-            gw.launch();
+        //if (e.getKeyEvent() != -1)
+            //gw.launch();
     }
 }

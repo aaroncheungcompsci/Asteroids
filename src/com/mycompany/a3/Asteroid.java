@@ -6,11 +6,11 @@ import java.util.Random;
 
 public class Asteroid extends MoveableObject implements IDrawable, ICollider {
 
-    private final int size;
+    private int size;
 
     public Asteroid(Point2D location, int color) {
         Random r = new Random();
-        size = r.nextInt(24) + 6; //range between 6 - 30
+        size = r.nextInt(30) + 30; //range between 30 - 60, adjust values for asteroid size
         setSpeed();
         setDirection();
         setLocation(location);

@@ -1,6 +1,5 @@
 package com.mycompany.a3;
 
-import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Graphics;
 import com.codename1.ui.geom.Point2D;
 
@@ -9,14 +8,16 @@ public class Missile extends MoveableObject implements IDrawable, ICollider {
     private int fuelLevel;
     private final int MAX_FUEL = 50;
     private int size;
+    private final boolean playerFlag;
 
-    public Missile(int direction, int speed, Point2D location, int color, int size) {
+    public Missile(int direction, int speed, Point2D location, int color, int size, boolean playerFlag) {
         fuelLevel = MAX_FUEL;
         setDirection(direction);
         setSpeed(speed + 10);
         setLocation(location);
         setColor(color);
         this.size = size;
+        this.playerFlag = playerFlag;
     }
 
     public void useFuel() {
@@ -27,18 +28,11 @@ public class Missile extends MoveableObject implements IDrawable, ICollider {
         return fuelLevel;
     }
 
-    public boolean hasFuel() {
-        if (fuelLevel > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public void refillFuel() {
         fuelLevel = MAX_FUEL;
     }
 
+    @Override
     public String toString() {
         String parentDesc = super.toString();
         String myDesc = " fuel:" + fuelLevel;
@@ -91,7 +85,6 @@ public class Missile extends MoveableObject implements IDrawable, ICollider {
     }
 
     public void handleCollision(ICollider object) {
-
         if (object instanceof PS) {
             this.setPSFlag(false);
             this.setFlag(false);
@@ -108,7 +101,9 @@ public class Missile extends MoveableObject implements IDrawable, ICollider {
             this.setNPSFlag(true);
             this.setFlag(true);
         }
-
     }
 
+    public boolean belongsToPlayer() {
+        return playerFlag;
+    }
 }

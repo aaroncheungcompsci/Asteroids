@@ -6,7 +6,6 @@ import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.util.UITimer;
 import com.mycompany.a3.oldcommands.*;
 
-
 public class Game extends Form implements Runnable {
     private final GameWorld gw;
     private final MapView mv;
@@ -35,17 +34,12 @@ public class Game extends Form implements Runnable {
 
         toolbar.setTitle("Asteroids");
 
-        AboutCommand myAbout = new AboutCommand(gw);
-        SoundCommand mySound = new SoundCommand(gw);
-        QuitCommand myQuit = new QuitCommand(gw);
-
         Command sideMenuItem1 = new Command("New");
         Command sideMenuItem2 = new Command("Save");
         Command sideMenuItem3 = new Command("Undo");
 
         CheckBox sound = new CheckBox("Sound");
         sound.setSelected(true);
-        sound.setCommand(mySound);
         sound.getAllStyles().setBgTransparency(255);
         sound.getUnselectedStyle().setBgColor(ColorUtil.rgb(255,255,255));
         sound.getAllStyles().setFgColor(ColorUtil.BLACK);
@@ -54,8 +48,6 @@ public class Game extends Form implements Runnable {
         toolbar.addCommandToSideMenu(sideMenuItem1);
         toolbar.addCommandToSideMenu(sideMenuItem2);
         toolbar.addCommandToSideMenu(sideMenuItem3);
-        toolbar.addCommandToSideMenu(myAbout);
-        toolbar.addCommandToSideMenu(myQuit);
 
         //-----BUTTONS-----//
         Button addAsteroid = new Button("Add Asteroid"); //a
@@ -292,25 +284,7 @@ public class Game extends Form implements Runnable {
         t.cancel();
     }
 
-    public void playKeyBindings()
-    {
-        /*
-        addKeyListener('a', AddAsteroidCommand.asteroid(gw));
-        addKeyListener('y', );
-        addKeyListener('b', AddSpaceStationCommand.spaceStation(gw));
-        addKeyListener('s', AddShipCommand.ship(gw));
-        addKeyListener(-91, myAccelerate);
-        addKeyListener(-92, myDecelerate);
-        addKeyListener(-93, myLeft);
-        addKeyListener(-94, myRight);
-        addKeyListener(-90, myPSFire);
-        addKeyListener('j', myJumpHS);//jump hyperspace
-        addKeyListener('n', LoadMissileCommand.loadMissile(gw));
-        addKeyListener('q', QuitCommand.quit());
-        mv.setHandlesInput(false);
-        */
-
-
+    public void playKeyBindings() {
         addKeyListener(-91, new IncreaseSpeedCommand(gw));
         addKeyListener(-92, new DecreaseSpeedCommand(gw));
         addKeyListener(-93, new TurnLeftCommand(gw));
