@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class GameCollection implements ICollection {
 
-    private ArrayList collection;
+    private ArrayList<Object> collection;
 
     public GameCollection() {
-        collection = new ArrayList();
+        collection = new ArrayList<>();
     }
 
     public void add(GameObject object) {
@@ -43,11 +43,8 @@ public class GameCollection implements ICollection {
         public boolean hasNext() {
             if (collection.isEmpty()) {
                 return false;
-            } else if (currIndex == collection.size() - 1) {
-                return false;
-            } else {
-                return true;
-            }
+            } else
+                return currIndex != collection.size() - 1;
         }
 
         public Object getNext() {

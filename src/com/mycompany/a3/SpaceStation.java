@@ -43,6 +43,7 @@ public class SpaceStation extends FixedObject implements IDrawable, ICollider {
         return "Space Station: " + parentDesc + myDesc;
     }
 
+    @Override
     public int getSize() {
         return size;
     }
@@ -68,11 +69,8 @@ public class SpaceStation extends FixedObject implements IDrawable, ICollider {
         double pY = ptr.getY();
         double xLoc = component.getX() + this.getLocation().getX();
         double yLoc = component.getY() + this.getLocation().getY();
-        if (pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return pX >= xLoc && pX <= xLoc + getSize() && pY >= yLoc && pY <= yLoc + getSize();
     }
 
     public boolean collidesWith (ICollider object) {
@@ -88,11 +86,7 @@ public class SpaceStation extends FixedObject implements IDrawable, ICollider {
         int otherRadius = gObject.getSize()/2;
         int radiiSquare = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
 
-        if (distBetweenCenters <= radiiSquare) {
-            return true;
-        } else {
-            return false;
-        }
+        return distBetweenCenters <= radiiSquare;
     }
 
     public void handleCollision(ICollider object) {

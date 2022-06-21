@@ -57,7 +57,7 @@ public class GameWorld extends Observable implements IGameWorld {
         psColor = -1;
         npsColor = -1;
         spaceStationColor = -1;
-        missileColor = -1;
+        missileColor = ColorUtil.BLACK;
         sound = true;
         gameSound = new GameSound();
     }
@@ -356,70 +356,38 @@ public class GameWorld extends Observable implements IGameWorld {
             return;
         }
         try {
+            PS player;
+            NPS npc;
+            Missile missile = null;
             for (int i = 0; i < store.getSize(); i++) {
                 if (store.getElement(i) instanceof PS) {
-                    PS player = (PS) store.getElement(i);
+                    player = (PS) store.getElement(i);
                     if (player.getMissileCount() == 0) {
                         LOGGER.log(Level.INFO, "PS has no more missiles!");
                         return;
-                    } else {
-                        if (missileColor == -1) {
-                            missileColor = ColorUtil.BLACK;
-                        }
-                        Point2D point = new Point2D(((PS) store.getElement(i)).getLocation().getX(),
-                                ((PS) store.getElement(i)).getLocation().getY());
-                        Missile missile = new Missile(player.getDirection(),
-                                player.getSpeed(), point, missileColor, 5);
-                        player.fire(missile);
-                        gameSound.missileLaunchSound();
-                        store.add(missile);
-                        LOGGER.log(Level.INFO, "PS missile fired!");
-                        this.notifyObserver();
-                        return;
                     }
+                    Point2D point = new Point2D(((PS) store.getElement(i)).getLocation().getX(),
+                            ((PS) store.getElement(i)).getLocation().getY());
+                    missile = new Missile(player.getDirection(),
+                            player.getSpeed(), point, missileColor, 5, true);
+                    player.fire(missile);
+                } else if (store.getElement(i) instanceof NPS) {
+                    npc = (NPS) store.getElement(i);
+                    Point2D point = new Point2D(((NPS) store.getElement(i)).getLocation().getX(),
+                            ((NPS) store.getElement(i)).getLocation().getY());
+                    missile = new Missile(npc.getDirection(),
+                            npc.getSpeed(), point, missileColor, 5, false);
+                    npc.fire(missile);
                 }
+                gameSound.missileLaunchSound();
+                store.add(missile);
+                LOGGER.log(Level.INFO, "Missile fired!");
+                this.notifyObserver();
+                return;
             }
             throw new NullPointerException();
         } catch (NullPointerException e) {
-            LOGGER.log(Level.WARNING, NO_PS);
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, "A different error has occcured.");
-        }
-    }
-
-    public void launch() { //L
-        if (this.isPaused()) {
-            return;
-        }
-        if (store.getSize() == 0) {
-            LOGGER.log(Level.INFO, "There is no NPS!");
-            return;
-        }
-        try {
-            for (int i = 0; i < store.getSize(); i++) {
-                if (store.getElement(i) instanceof NPS) {
-                    NPS npc = (NPS) store.getElement(i);
-                    if (npc.getMissileCount() == 0) {
-                        LOGGER.log(Level.INFO, "NPS has no more missiles!");
-                    } else {
-                        if (missileColor == -1) {
-                            missileColor = generateColor();
-                        }
-                        Point2D point = new Point2D(((NPS) store.getElement(i)).getLocation().getX(),
-                                ((NPS) store.getElement(i)).getLocation().getY());
-                        Missile missile = new Missile(npc.getDirection(), npc.getSpeed(), point, missileColor, 5);
-                        npc.fire(missile);
-                        gameSound.missileLaunchSound();
-                        LOGGER.log(Level.INFO, "NPS has fired a missile!");
-                        store.add(missile);
-                        this.notifyObserver();
-                        return;
-                    }
-                }
-            }
-            throw new NoSuchElementException();
-        } catch (NoSuchElementException e) {
-            LOGGER.log(Level.INFO, "There is no NPS!");
+            LOGGER.log(Level.WARNING, "NullPointer in Fire Method");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, DIFFERROR);
         }
@@ -755,14 +723,6 @@ public class GameWorld extends Observable implements IGameWorld {
                     i--;
                 }
             }
-            if (store.getElement(i) instanceof MissileNPS) {
-                MissileNPS missile = (MissileNPS) store.getElement(i);
-                missile.useFuel();
-                if (missile.getFuel() == 0) {
-                    store.removeAtIndex(i);
-                    i--;
-                }
-            }
             if (store.getElement(i) instanceof SpaceStation) {
                 SpaceStation ss = (SpaceStation) store.getElement(i);
                 if ((gameTime * 1000) % ss.getBlinkRate() == 0) {
@@ -790,14 +750,13 @@ public class GameWorld extends Observable implements IGameWorld {
                 }
             }
             if (roll >= 9) {
-                launch();
+                fire();
             }
         }
         collisionCheck();
     }
 
     public void collisionCheck() {
-
         IIterator colIterator = store.getIterator();
         while(colIterator.hasNext()) {
             ICollider curObj = (ICollider)colIterator.getNext();

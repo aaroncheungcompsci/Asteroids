@@ -32,11 +32,11 @@ public class PS extends Ship implements ISteerable, IDrawable, ICollider {
     }
 
     public void steerLeft() {
-        setDirection((getDirection() + 15) % 360);
+        setDirection((getDirection() + 22 % 360));
     }
 
     public void steerRight() {
-        setDirection((getDirection() - 15 % 360));
+        setDirection((getDirection() - 22 % 360));
     }
 
     public void steerLauncher() {
@@ -67,8 +67,6 @@ public class PS extends Ship implements ISteerable, IDrawable, ICollider {
         } else {
             g.fillTriangle((int) top.getX()+20, (int) top.getY()+20, (int) bottomLeft.getX()+20, (int) bottomLeft.getY()+20,
                     (int) bottomRight.getX()+20, (int) bottomRight.getY()+20);
-            //g.drawArc((int) top.getX(), (int) bottomRight.getY(),
-            //        getSize(), getSize(), 0, 360);
         }
     }
 

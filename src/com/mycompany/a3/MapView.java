@@ -2,9 +2,7 @@ package com.mycompany.a3;
 
 import com.codename1.charts.util.ColorUtil;
 import com.codename1.ui.Container;
-import com.codename1.ui.Dialog;
 import com.codename1.ui.Graphics;
-import com.codename1.ui.Transform;
 import com.codename1.ui.geom.Point2D;
 import com.codename1.ui.plaf.Border;
 
@@ -35,63 +33,14 @@ public class MapView extends Container implements Observer {
                 ICollider otherObj = (ICollider)iter2.getNext();
                 // get a collidable object
                 // check for collision
-                if (otherObj!=curObj) {
-                    // make sure it's not the SAME object
-                    if (curObj.collidesWith(otherObj)) {
-                        curObj.handleCollision(otherObj);
-                    }
+                if (otherObj!=curObj && curObj.collidesWith(otherObj)) {
+                    // make sure its not the same object
+                    curObj.handleCollision(otherObj);
                 }
             }
         }
         this.repaint();
     }
-
-    /*
-    public void pointerPressed(int x, int y) {
-        int counter = 0;
-        if(gw.isPaused())
-        {
-            collection = gw.getGameCollection();
-            IIterator iterator = collection.getIterator();
-            x = x - getParent().getAbsoluteX();
-            y = y - getParent().getAbsoluteY();
-            Point2D pPtrRelPrnt = new Point2D(x, y);
-            Point2D pCmpRelPrnt = new Point2D(getX(), getY());
-            Object current;
-            while (iterator.hasNext()) {
-                current = iterator.getNext();
-                if (((GameObject) current).contains(pPtrRelPrnt, pCmpRelPrnt)) {
-                    ((GameObject) current).setSelected(true);
-                    //highlighted += 1; highlight?
-                } else {
-                    counter += 1;
-                }
-                this.repaint();
-            }
-
-            if(counter == iterator.getSize()) {
-                this.deselectAll();
-            }
-
-        } else {
-            return;
-        }
-    }
-
-
-    public void deselectAll() {
-        collection = gw.getGameCollection();
-        IIterator iterator = collection.getIterator();
-        Object current;
-        while(iterator.hasNext()) {
-            current = iterator.getNext();
-            if (((GameObject) current).isSelected() == true) {
-                ((GameObject) current).setSelected(false);
-            }
-            this.repaint();
-        }
-    }
-    */
 
     @Override
     public void paint(Graphics g) {

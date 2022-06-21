@@ -25,6 +25,7 @@ public class MissileNPS extends MoveableObject implements IDrawable, ICollider {
         return fuelLevel;
     }
 
+    @Override
     public String toString() {
         String parentDesc = super.toString();
         String myDesc = " fuel:" + fuelLevel;
@@ -69,11 +70,7 @@ public class MissileNPS extends MoveableObject implements IDrawable, ICollider {
         int otherRadius = gObject.getSize()/2;
         int radiiSquare = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
 
-        if (distBetweenCenters <= radiiSquare) {
-            return true;
-        } else {
-            return false;
-        }
+        return distBetweenCenters <= radiiSquare;
     }
 
     public void handleCollision(ICollider object) {
